@@ -38,8 +38,8 @@ const Tag = ({ pageContext }) => {
       <Container>
         <Information>
           {posts.map((post, index) => (
-            <Link key={index} to={post.frontmatter.path}>
-              <h3>{post.frontmatter.title}</h3>
+            <Link key={index} to={post.slug}>
+              <h3>{post.title}</h3>
             </Link>
           ))}
         </Information>

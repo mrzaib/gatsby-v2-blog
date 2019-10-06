@@ -21,23 +21,22 @@ const PostWrapper = styled.div`
 `;
 
 const Index = ({ data }) => {
-  const { edges } = data.allMarkdownRemark;
+  const { edges } = data.allContentfulPost;
   return (
     <Layout>
       <Helmet title={'Home Page'} />
       <Header title="Home Page">Gatsby Tutorial Starter</Header>
       <PostWrapper>
         {edges.map(({ node }) => {
-          const { id, excerpt, frontmatter } = node;
-          const { cover, path, title, date } = frontmatter;
+          const { id, subtitle, image, slug, title, createdAt } = node;
           return (
             <PostList
               key={id}
-              cover={cover.childImageSharp.fluid}
-              path={path}
+              cover={image.fluid}
+              path={slug}
               title={title}
-              date={date}
-              excerpt={excerpt}
+              date={createdAt}
+              excerpt={subtitle}
             />
           );
         })}
@@ -48,54 +47,22 @@ const Index = ({ data }) => {
 
 export default Index;
 
-Index.propTypes = {
-  data: PropTypes.shape({
-    allMarkdownRemark: PropTypes.shape({
-      edges: PropTypes.arrayOf(
-        PropTypes.shape({
-          node: PropTypes.shape({
-            excerpt: PropTypes.string,
-            frontmatter: PropTypes.shape({
-              cover: PropTypes.object.isRequired,
-              path: PropTypes.string.isRequired,
-              title: PropTypes.string.isRequired,
-              date: PropTypes.string.isRequired,
-              tags: PropTypes.array,
-            }),
-          }),
-        }).isRequired
-      ),
-    }),
-  }),
-};
-
 export const query = graphql`
   query {
-    allMarkdownRemark(
-      limit: 6
-      sort: { order: DESC, fields: [frontmatter___date] }
-    ) {
+    allContentfulPost {
       edges {
         node {
-          id
-          excerpt(pruneLength: 75)
-          frontmatter {
-            title
-            path
-            tags
-            date(formatString: "MM.DD.YYYY")
-            cover {
-              childImageSharp {
-                fluid(
-                  maxWidth: 1000
-                  quality: 90
-                  traceSVG: { color: "#2B2B2F" }
-                ) {
-                  ...GatsbyImageSharpFluid_withWebp_tracedSVG
-                }
-              }
+          slug
+          title
+          tags
+          subtitle
+          image {
+            fluid(quality: 90, maxWidth: 1000) {
+              src
             }
           }
+          id
+          createdAt(fromNow: true)
         }
       }
     }

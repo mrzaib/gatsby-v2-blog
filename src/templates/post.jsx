@@ -21,20 +21,28 @@ const PostSuggestion = styled.div`
 
 const Post = ({ data, pageContext }) => {
   const { next, prev } = pageContext;
-  const {html, frontmatter, excerpt } = data.markdownRemark
-  const {date, title, tags, path, description} = frontmatter
-  const image = frontmatter.cover.childImageSharp.fluid;
+  const {
+    title,
+    tags,
+    author,
+    slug,
+    createdAt,
+    image,
+    content,
+    subtitle,
+  } = data.contentfulPost;
+  const html = content.childContentfulRichText.html;
 
   return (
     <Layout>
       <SEO
         title={title}
-        description={description || excerpt || ' '}
-        banner={image}
-        pathname={path}
+        description={subtitle || ' '}
+        banner={image.fluid.src}
+        pathname={slug}
         article
       />
-      <Header title={title} date={date} cover={image} />
+      <Header title={title} date={createdAt} cover={image.fluid} />
       <Container>
         <Content input={html} />
         <TagsBlock list={tags || []} />
@@ -42,17 +50,17 @@ const Post = ({ data, pageContext }) => {
       <SuggestionBar>
         <PostSuggestion>
           {prev && (
-            <Link to={prev.frontmatter.path}>
+            <Link to={prev.slug}>
               Previous
-              <h3>{prev.frontmatter.title}</h3>
+              <h3>{prev.title}</h3>
             </Link>
           )}
         </PostSuggestion>
         <PostSuggestion>
           {next && (
-            <Link to={next.frontmatter.path}>
+            <Link to={next.slug}>
               Next
-              <h3>{next.frontmatter.title}</h3>
+              <h3>{next.title}</h3>
             </Link>
           )}
         </PostSuggestion>
@@ -63,35 +71,23 @@ const Post = ({ data, pageContext }) => {
 
 export default Post;
 
-Post.propTypes = {
-  pageContext: PropTypes.shape({
-    prev: PropTypes.object,
-    next: PropTypes.object,
-  }).isRequired,
-  data: PropTypes.object.isRequired,
-};
-
 export const query = graphql`
   query($pathSlug: String!) {
-    markdownRemark(frontmatter: { path: { eq: $pathSlug } }) {
-      html
-      frontmatter {
-        date
-        title
-        tags
-        cover {
-          childImageSharp {
-            fluid(
-              maxWidth: 1920
-              quality: 90
-              duotone: { highlight: "#386eee", shadow: "#2323be", opacity: 60 }
-            ) {
-              ...GatsbyImageSharpFluid_withWebp
-            }
-            resize(width: 1200, quality: 90) {
-              src
-            }
-          }
+    contentfulPost(slug: { eq: $pathSlug }) {
+      title
+      tags
+      author
+      slug
+      subtitle
+      createdAt(fromNow: true)
+      image {
+        fluid(maxWidth: 1920, quality: 90) {
+          src
+        }
+      }
+      content {
+        childContentfulRichText {
+          html
         }
       }
     }

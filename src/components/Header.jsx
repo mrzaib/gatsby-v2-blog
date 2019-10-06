@@ -47,6 +47,7 @@ const Subtitle = styled.p`
 const Header = ({ children, title, date, cover }) => (
   <Wrapper>
     <Img fluid={cover || {} || [] || ''} />
+    {cover.src ? <img src={cover.src} width="100%" /> : null}
     <Text>
       <h1>{title}</h1>
       <h3>{date}</h3>
@@ -57,17 +58,6 @@ const Header = ({ children, title, date, cover }) => (
 );
 
 export default Header;
-
-Header.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.bool]),
-  cover: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-  date: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  title: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.object,
-    PropTypes.bool,
-  ]),
-};
 
 Header.defaultProps = {
   children: false,

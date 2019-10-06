@@ -12,16 +12,12 @@ exports.createPages = ({ graphql, actions }) => {
       graphql(
         `
           query {
-            allMarkdownRemark(
-              sort: { order: ASC, fields: [frontmatter___date] }
-            ) {
+            allContentfulPost {
               edges {
                 node {
-                  frontmatter {
-                    path
-                    title
-                    tags
-                  }
+                  slug
+                  title
+                  tags
                 }
               }
             }
@@ -32,13 +28,13 @@ exports.createPages = ({ graphql, actions }) => {
           return reject(result.errors);
         }
 
-        const posts = result.data.allMarkdownRemark.edges;
+        const posts = result.data.allContentfulPost.edges;
 
         const postsByTag = {};
         // create tags page
         posts.forEach(({ node }) => {
-          if (node.frontmatter.tags) {
-            node.frontmatter.tags.forEach(tag => {
+          if (node.tags) {
+            node.tags.forEach(tag => {
               if (!postsByTag[tag]) {
                 postsByTag[tag] = [];
               }
@@ -74,7 +70,7 @@ exports.createPages = ({ graphql, actions }) => {
 
         //create posts
         posts.forEach(({ node }, index) => {
-          const path = node.frontmatter.path;
+          const path = node.slug;
           const prev = index === 0 ? null : posts[index - 1].node;
           const next =
             index === posts.length - 1 ? null : posts[index + 1].node;
